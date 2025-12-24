@@ -63,9 +63,9 @@ app.use('/api/users', (req, res) => {
   res.json({ message: 'User endpoints coming soon' });
 });
 
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
+// 404 handler - must be last route
+app.all('*', (req, res) => {
+  res.status(404).json({ error: 'Route not found', path: req.path });
 });
 
 // Error handling middleware
