@@ -5,8 +5,22 @@ const nextConfig: NextConfig = {
   env: {
     CUSTOM_KEY: process.env.CUSTOM_KEY,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        port: '',
+        pathname: '/**',
+      },
+    ],
+  },
   async rewrites() {
     return [
+      {
+        source: '/api/auth/:path*',
+        destination: '/api/auth/:path*' // Keep auth endpoints local
+      },
       {
         source: '/api/:path*',
         destination: process.env.NODE_ENV === 'production' 

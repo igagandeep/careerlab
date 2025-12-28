@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next"
+import { Toaster } from "sonner";
+import Providers from "@/providers/SessionProvider";
+import QueryProvider from "@/providers/QueryProvider";
+import { ModalProvider } from "@/providers/ModalProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -28,7 +33,15 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         style={{ backgroundColor: '#F6F7F9' }}
       >
-        {children}
+        <QueryProvider>
+          <Providers>
+            <ModalProvider>
+              {children}
+            </ModalProvider>
+          </Providers>
+        </QueryProvider>
+        <Toaster position="top-right" />
+        <SpeedInsights />
       </body>
     </html>
   );
