@@ -13,7 +13,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   ],
   callbacks: {
     async redirect({ url, baseUrl }) {
-      // Redirect to dashboard after sign in
       if (url === baseUrl || url === `${baseUrl}/`) {
         return `${baseUrl}/dashboard`;
       }
