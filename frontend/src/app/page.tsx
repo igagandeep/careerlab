@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { redirect } from 'next/navigation';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import SignInModal from '@/components/SignInModal';
+import { useModal } from '@/providers/ModalProvider';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -53,7 +54,18 @@ const services = [
 ];
 
 export default function Home() {
-  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const { data: session, status } = useSession();
+  const { openSignInModal } = useModal();
+
+  // Redirect to dashboard if logged in
+  if (status === 'authenticated' && session) {
+    redirect('/dashboard');
+  }
+
+  // Show loading while checking session
+  if (status === 'loading') {
+    return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
+  }
 
   return (
     <>
@@ -90,14 +102,14 @@ export default function Home() {
               ))}
             </div>
             <div className='flex flex-col md:flex-row justify-center gap-3 md:gap-4 pt-2 px-4 md:px-0'>
-              <Button 
-                onClick={() => setIsSignInModalOpen(true)}
+              <Button
+                onClick={openSignInModal}
                 className='w-full md:w-60 h-12 md:h-14 rounded-[12px] bg-secondary text-base md:text-lg text-secondary-foreground hover:bg-secondary/90 transition-colors'
               >
                 Start Free Trial
               </Button>
               <Button
-                onClick={() => setIsSignInModalOpen(true)}
+                onClick={openSignInModal}
                 className='w-full md:w-60 h-12 md:h-14 rounded-[12px] text-base md:text-lg'
                 variant='outline'
               >
@@ -133,7 +145,9 @@ export default function Home() {
                     <IconComponent className={`w-8 h-8 ${service.iconColor}`} />
                   </div>
                   <h3 className='text-xl font-semibold'>{service.title}</h3>
-                  <p className='text-gray-600 text-base leading-relaxed'>{service.desc}</p>
+                  <p className='text-gray-600 text-base leading-relaxed'>
+                    {service.desc}
+                  </p>
                 </div>
               );
             })}
@@ -146,26 +160,28 @@ export default function Home() {
                 <Sparkles className='w-4 h-4' />
                 <span>Start Your Journey Today</span>
               </div>
-              
+
               <h2 className='text-2xl md:text-4xl lg:text-5xl font-bold leading-tight'>
                 Ready to Accelerate Your Career?
               </h2>
-              
+
               <p className='text-gray-300 text-base md:text-xl leading-relaxed max-w-3xl mx-auto'>
-                Join thousands of professionals who&apos;ve transformed their job search with CareerLab.<br />
+                Join thousands of professionals who&apos;ve transformed their
+                job search with CareerLab.
+                <br />
                 Get started for free — no credit card required.
               </p>
-              
+
               <div className='flex flex-col md:flex-row justify-center gap-4 pt-6'>
-                <Button 
-                  onClick={() => setIsSignInModalOpen(true)}
+                <Button
+                  onClick={openSignInModal}
                   className='bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg rounded-lg font-semibold'
                 >
                   Get Started Free →
                 </Button>
-                <Button 
-                  onClick={() => setIsSignInModalOpen(true)}
-                  variant='secondary' 
+                <Button
+                  onClick={openSignInModal}
+                  variant='secondary'
                   className='bg-white text-slate-800 hover:bg-gray-100 px-8 py-4 text-lg rounded-lg font-semibold'
                 >
                   Try Resume Analyzer
@@ -176,12 +192,6 @@ export default function Home() {
         </div>
       </div>
       <Footer />
-      
-      {/* Sign In Modal */}
-      <SignInModal
-        isOpen={isSignInModalOpen}
-        onClose={() => setIsSignInModalOpen(false)}
-      />
     </>
   );
 }

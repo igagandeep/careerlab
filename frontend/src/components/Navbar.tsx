@@ -3,11 +3,11 @@ import { Menu, Sparkles, X } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { Button } from './ui/button';
-import SignInModal from './SignInModal';
+import { useModal } from '../providers/ModalProvider';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isSignInModalOpen, setIsSignInModalOpen] = useState(false);
+  const { openSignInModal } = useModal();
 
   return (
     <>
@@ -25,7 +25,7 @@ const Navbar = () => {
           <ul className='hidden md:flex items-center gap-6'>
             <li>
               <button
-                onClick={() => setIsSignInModalOpen(true)}
+                onClick={openSignInModal}
                 className='text-sm flex items-center font-semibold gap-1 hover:text-gray-600 transition-colors'
               >
                 Sign In
@@ -33,7 +33,7 @@ const Navbar = () => {
             </li>
             <li className='flex items-center'>
               <Button 
-                onClick={() => setIsSignInModalOpen(true)}
+                onClick={openSignInModal}
                 className='bg-primary hover:bg-primary/90 text-primary-foreground'
               >
                 Get Started Free
@@ -60,7 +60,7 @@ const Navbar = () => {
             <div className='max-w-[1377px] mx-auto px-4 py-4 space-y-4'>
               <button
                 onClick={() => {
-                  setIsSignInModalOpen(true);
+                  openSignInModal();
                   setIsMenuOpen(false);
                 }}
                 className='text-sm font-semibold block w-full text-left hover:text-gray-600 transition-colors'
@@ -69,7 +69,7 @@ const Navbar = () => {
               </button>
               <Button 
                 onClick={() => {
-                  setIsSignInModalOpen(true);
+                  openSignInModal();
                   setIsMenuOpen(false);
                 }}
                 className='bg-primary hover:bg-primary/90 text-primary-foreground w-full'
@@ -80,12 +80,6 @@ const Navbar = () => {
           </div>
         )}
       </header>
-
-      {/* Sign In Modal */}
-      <SignInModal
-        isOpen={isSignInModalOpen}
-        onClose={() => setIsSignInModalOpen(false)}
-      />
     </>
   );
 };
