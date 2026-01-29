@@ -1,8 +1,9 @@
-import express, { json, urlencoded } from 'express';
+import express from 'express';
 import cors from 'cors';
 import { config } from 'dotenv';
 import { connectDB, disconnectDB } from './config/db.js';
 import authRoutes from './routes/authRoutes.js';
+import { notFound, errorHandler } from './middlewares/errorMiddleware.js';
 
 config();
 connectDB();
@@ -17,29 +18,20 @@ const corsOptions = {
   credentials: true,
   optionsSuccessStatus: 200,
 };
+
 app.use(cors(corsOptions));
 
 // Body parsing middleware
-app.use(json({ limit: '10mb' }));
-app.use(urlencoded({ extended: true, limit: '10mb' }));
-
-// Basic route
-app.get('/', (req, res) => {
-  res.json({ message: 'CareerLab API is running!' });
-});
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use('/auth', authRoutes);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({
-    error:
-      process.env.NODE_ENV === 'production'
-        ? 'Something went wrong!'
-        : err.message,
-  });
-});
+// 404 handler - must come after all routes
+app.use(notFound);
+
+// Global error handler - must be last
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;
