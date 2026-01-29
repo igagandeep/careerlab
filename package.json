@@ -8,12 +8,19 @@
     "dev:backend": "cd backend && npm run dev",
     "build": "cd frontend && npm run build",
     "start": "concurrently \"cd frontend && npm start\" \"cd backend && npm start\"",
-    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "devDependencies": {
-    "concurrently": "^8.2.2"
+    "concurrently": "^8.2.2",
+    "prettier": "^3.8.1"
   },
-  "keywords": ["nextjs", "express", "fullstack"],
+  "keywords": [
+    "nextjs",
+    "express",
+    "fullstack"
+  ],
   "author": "",
   "license": "ISC"
 }
