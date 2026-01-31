@@ -32,4 +32,27 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-export { registerSchema, loginSchema };
+const verifyEmailSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email is required')
+    .email('Please provide a valid email')
+    .toLowerCase(),
+  otp: z
+    .string()
+    .min(6, 'OTP must be 6 digits')
+    .max(6, 'OTP must be 6 digits')
+    .regex(/^\d{6}$/, 'OTP must be exactly 6 digits'),
+});
+
+const resendOTPSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email is required')
+    .email('Please provide a valid email')
+    .toLowerCase(),
+});
+
+export { registerSchema, loginSchema, verifyEmailSchema, resendOTPSchema };
