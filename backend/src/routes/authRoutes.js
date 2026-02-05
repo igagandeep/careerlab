@@ -5,12 +5,16 @@ import {
   register,
   resendOTP,
   verifyEmail,
+  forgotPassword,
+  resetPassword,
 } from '../controllers/authController.js';
 import {
   loginSchema,
   registerSchema,
   resendOTPSchema,
   verifyEmailSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
 } from '../validators/authValidator.js';
 import { validateRequest } from '../middlewares/validateRequest.js';
 
@@ -21,5 +25,15 @@ router.post('/login', validateRequest(loginSchema), login);
 router.post('/logout', logout);
 router.post('/verify-email', validateRequest(verifyEmailSchema), verifyEmail);
 router.post('/resend-otp', validateRequest(resendOTPSchema), resendOTP);
+router.post(
+  '/forgot-password',
+  validateRequest(forgotPasswordSchema),
+  forgotPassword
+);
+router.post(
+  '/reset-password',
+  validateRequest(resetPasswordSchema),
+  resetPassword
+);
 
 export default router;
