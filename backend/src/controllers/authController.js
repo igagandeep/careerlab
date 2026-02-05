@@ -1,18 +1,20 @@
 import { prisma } from '../config/db.js';
 import bcrypt from 'bcryptjs';
-import crypto from 'crypto';
 import { generateToken } from '../utils/generateToken.js';
+import { generateOTP } from '../utils/generateOTP.js';
 import { Resend } from 'resend';
 
-const sendVerificationEmail = async (email, verificationToken) => {
+const sendVerificationEmail = async (email, verificationToken, isSignUp) => {
   const resend = new Resend(process.env.RESEND_API_KEY);
   try {
     await resend.emails.send({
       from: 'onboarding@resend.dev',
       to: email,
-      subject: 'Verify your CareerLab account',
+      subject: isSignUp
+        ? 'Verify your CareerLab account'
+        : 'Reset your password',
       html: `
-        <h2>Email Verification</h2>
+        <h2>${isSignUp ? 'Email Verification' : 'Reset Password'}</h2>
         <p>Your verification code: <strong>${verificationToken}</strong></p>
         <p>This code expires in 10 minutes.</p>
       `,
@@ -40,11 +42,6 @@ const register = async (req, res) => {
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
-  // Generate 6-digit OTP
-  const generateOTP = () => {
-    return crypto.randomInt(100000, 999999).toString();
-  };
-
   const verificationToken = generateOTP();
   const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
@@ -61,7 +58,7 @@ const register = async (req, res) => {
   });
 
   try {
-    await sendVerificationEmail(email, verificationToken);
+    await sendVerificationEmail(email, verificationToken, true);
   } catch (emailError) {
     console.error('Failed to send verification email:', emailError);
   }
@@ -154,11 +151,6 @@ const resendOTP = async (req, res) => {
       return res.status(400).json({ error: 'Email already verified' });
     }
 
-    // Generate new OTP
-    const generateOTP = () => {
-      return crypto.randomInt(100000, 999999).toString();
-    };
-
     const verificationToken = generateOTP();
     const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
 
@@ -244,4 +236,108 @@ const verifyEmail = async (req, res) => {
   }
 };
 
-export { register, login, logout, verifyEmail, resendOTP };
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { email: email },
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const verificationToken = generateOTP();
+    const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { email: email },
+      data: {
+        verificationToken,
+        tokenExpiry,
+      },
+    });
+
+    try {
+      await sendVerificationEmail(email, verificationToken, false);
+    } catch (emailError) {
+      console.error('Failed to send password reset email:', emailError);
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password reset code sent to your email',
+      otpSent: true,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ error: 'Server error while processing forgot password' });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { email, otp, newPassword, confirmPassword } = req.body;
+
+  try {
+    if (!email || !otp || !newPassword || !confirmPassword) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ error: 'Passwords do not match' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: email },
+    });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.verificationToken !== otp) {
+      return res.status(400).json({ error: 'Invalid reset code' });
+    }
+
+    if (user.tokenExpiry && new Date() > user.tokenExpiry) {
+      return res.status(400).json({ error: 'Reset code has expired' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    const updateUser = await prisma.user.update({
+      where: { email: email },
+      data: {
+        password: hashedPassword,
+        verificationToken: null,
+        tokenExpiry: null,
+      },
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Password reset successfully',
+      data: {
+        user: {
+          id: updateUser.id,
+          email: updateUser.email,
+        },
+      },
+    });
+  } catch (error) {
+    console.error('Reset password error:', error);
+    res.status(500).json({ error: 'Server error during password reset' });
+  }
+};
+
+export {
+  register,
+  login,
+  logout,
+  verifyEmail,
+  resendOTP,
+  forgotPassword,
+  resetPassword,
+};
