@@ -25,59 +25,68 @@ const sendVerificationEmail = async (email, verificationToken, isSignUp) => {
 };
 
 const register = async (req, res) => {
-  const { name, email, password } = req.body;
-
-  // Check if user already exists
-  const userExists = await prisma.user.findUnique({
-    where: { email: email },
-  });
-
-  if (userExists) {
-    return res
-      .status(400)
-      .json({ error: 'User already exists with this email' });
-  }
-
-  // Hash Password
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-
-  const verificationToken = generateOTP();
-  const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes from now
-
-  // Create User with OTP
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-      verificationToken,
-      tokenExpiry,
-      isVerified: false,
-    },
-  });
-
   try {
-    await sendVerificationEmail(email, verificationToken, true);
-  } catch (emailError) {
-    console.error('Failed to send verification email:', emailError);
-  }
+    const { name, email, password } = req.body;
 
-  res.status(201).json({
-    status: 'success',
-    message:
-      'User registered successfully. Please check your email for verification code.',
-    data: {
-      user: {
-        id: user.id,
-        name: name,
-        email: email,
-        isVerified: user.isVerified,
+    const userExists = await prisma.user.findUnique({
+      where: { email: email },
+    });
+
+    if (userExists) {
+      return res
+        .status(400)
+        .json({ error: 'User already exists with this email' });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const verificationToken = generateOTP();
+    const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        verificationToken,
+        tokenExpiry,
+        isVerified: false,
       },
-      // Don't send the actual OTP in response for security
-      otpSent: true,
-    },
-  });
+    });
+
+    try {
+      await sendVerificationEmail(email, verificationToken, true);
+    } catch (emailError) {
+      console.error('Failed to send verification email:', emailError);
+      await prisma.user.delete({
+        where: { id: user.id },
+      });
+      throw new Error(
+        'Failed to send verification email. Please try again or contact support.'
+      );
+    }
+
+    res.status(201).json({
+      status: 'success',
+      message:
+        'User registered successfully. Please check your email for verification code.',
+      data: {
+        user: {
+          id: user.id,
+          name: name,
+          email: email,
+          isVerified: user.isVerified,
+        },
+        otpSent: true,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      error: error.message || 'Server error during registration',
+      code: 'REGISTRATION_FAILED',
+    });
+  }
 };
 
 const login = async (req, res) => {
@@ -167,6 +176,9 @@ const resendOTP = async (req, res) => {
       await sendVerificationEmail(email, verificationToken);
     } catch (emailError) {
       console.error('Failed to send verification email:', emailError);
+      throw new Error(
+        'Failed to send verification email. Please try again or contact support.'
+      );
     }
 
     res.status(200).json({
@@ -175,7 +187,9 @@ const resendOTP = async (req, res) => {
       otpSent: true,
     });
   } catch (error) {
-    res.status(500).json({ error: 'Server error while resending OTP' });
+    res
+      .status(500)
+      .json({ error: error.message || 'Server error while resending OTP' });
   }
 };
 
@@ -244,36 +258,35 @@ const forgotPassword = async (req, res) => {
       where: { email: email },
     });
 
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
+    if (user) {
+      const verificationToken = generateOTP();
+      const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
-    const verificationToken = generateOTP();
-    const tokenExpiry = new Date(Date.now() + 10 * 60 * 1000);
+      await prisma.user.update({
+        where: { email: email },
+        data: {
+          verificationToken,
+          tokenExpiry,
+        },
+      });
 
-    await prisma.user.update({
-      where: { email: email },
-      data: {
-        verificationToken,
-        tokenExpiry,
-      },
-    });
-
-    try {
-      await sendVerificationEmail(email, verificationToken, false);
-    } catch (emailError) {
-      console.error('Failed to send password reset email:', emailError);
+      try {
+        await sendVerificationEmail(email, verificationToken, false);
+      } catch (emailError) {
+        console.error('Failed to send password reset email:', emailError);
+      }
     }
 
     res.status(200).json({
       status: 'success',
-      message: 'Password reset code sent to your email',
+      message:
+        'If an account exists with this email, a password reset code has been sent.',
       otpSent: true,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({ error: 'Server error while processing forgot password' });
+    res.status(500).json({
+      error: error.message || 'Server error while processing forgot password',
+    });
   }
 };
 
