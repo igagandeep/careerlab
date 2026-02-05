@@ -32,4 +32,67 @@ const loginSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
-export { registerSchema, loginSchema };
+const verifyEmailSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email is required')
+    .email('Please provide a valid email')
+    .toLowerCase(),
+  otp: z
+    .string()
+    .min(6, 'OTP must be 6 digits')
+    .max(6, 'OTP must be 6 digits')
+    .regex(/^\d{6}$/, 'OTP must be exactly 6 digits'),
+});
+
+const resendOTPSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email is required')
+    .email('Please provide a valid email')
+    .toLowerCase(),
+});
+
+const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email is required')
+    .email('Please provide a valid email')
+    .toLowerCase(),
+});
+
+const resetPasswordSchema = z
+  .object({
+    email: z
+      .string()
+      .trim()
+      .min(1, 'Email is required')
+      .email('Please provide a valid email')
+      .toLowerCase(),
+    otp: z
+      .string()
+      .min(6, 'OTP must be 6 digits')
+      .max(6, 'OTP must be 6 digits')
+      .regex(/^\d{6}$/, 'OTP must be exactly 6 digits'),
+    newPassword: z
+      .string()
+      .min(1, 'Password is required')
+      .min(6, 'Password must be at least 6 characters'),
+    confirmPassword: z.string().min(1, 'Confirm password is required'),
+  })
+  .refine(data => data.newPassword === data.confirmPassword, {
+    message: 'Passwords do not match',
+    path: ['confirmPassword'],
+  });
+
+export {
+  registerSchema,
+  loginSchema,
+  verifyEmailSchema,
+  resendOTPSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+};
