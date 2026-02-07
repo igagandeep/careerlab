@@ -26,9 +26,9 @@ export function useAuth() {
     queryFn: async () => {
       try {
         return await authApi.getCurrentUser();
-      } catch (error: ApiError) {
+      } catch (error) {
         // If 401, user is not authenticated
-        if (error.status === 401) {
+        if (error instanceof ApiError && error.status === 401) {
           return null;
         }
         throw error;
@@ -47,8 +47,10 @@ export function useAuth() {
       toast.success('Logged out successfully');
       router.push('/');
     },
-    onError: (error: ApiError) => {
-      toast.error(error.message || 'Logout failed');
+    onError: error => {
+      const message =
+        error instanceof ApiError ? error.message : 'Logout failed';
+      toast.error(message);
     },
   });
 
