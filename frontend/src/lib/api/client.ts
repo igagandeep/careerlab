@@ -37,7 +37,7 @@ async function fetchApi<T>(
   }
 
   // Default headers - only set Content-Type for non-FormData requests
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     ...fetchConfig.headers,
   };
 
