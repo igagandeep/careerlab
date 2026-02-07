@@ -1,11 +1,20 @@
 'use client';
 
-import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Sparkles, LayoutDashboard, Briefcase, FileText, MessageSquare, Menu, X, LogOut } from 'lucide-react';
+import {
+  Sparkles,
+  LayoutDashboard,
+  Briefcase,
+  FileText,
+  MessageSquare,
+  Menu,
+  X,
+  LogOut,
+} from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
+import { useAuth } from '@/hooks';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -15,11 +24,11 @@ const navLinks = [
 ];
 
 export default function DashboardNavbar() {
-  const { data: session } = useSession();
+  const { user, logout, isLoggingOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSignOut = () => {
-    signOut({ callbackUrl: '/' });
+    logout();
   };
 
   return (
@@ -35,7 +44,7 @@ export default function DashboardNavbar() {
 
         {/* Desktop Navigation */}
         <ul className="hidden md:flex items-center gap-6">
-          {navLinks.map((link) => {
+          {navLinks.map(link => {
             const Icon = link.icon;
             return (
               <li key={link.href}>
@@ -58,13 +67,14 @@ export default function DashboardNavbar() {
             variant="ghost"
             size="sm"
             className="text-gray-600 hover:text-gray-900"
+            disabled={isLoggingOut}
           >
             <LogOut className="w-4 h-4 mr-2" />
-            Logout
+            {isLoggingOut ? 'Logging out...' : 'Logout'}
           </Button>
-          {session?.user?.image && (
+          {user?.image && (
             <Image
-              src={session.user.image}
+              src={user.image}
               alt="Profile"
               width={36}
               height={36}
@@ -78,7 +88,11 @@ export default function DashboardNavbar() {
           className="md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
         >
-          {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {isMenuOpen ? (
+            <X className="w-6 h-6" />
+          ) : (
+            <Menu className="w-6 h-6" />
+          )}
         </button>
       </nav>
 
@@ -86,7 +100,7 @@ export default function DashboardNavbar() {
       {isMenuOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white">
           <div className="max-w-[1377px] mx-auto px-4 py-4 space-y-4">
-            {navLinks.map((link) => {
+            {navLinks.map(link => {
               const Icon = link.icon;
               return (
                 <Link
