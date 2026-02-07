@@ -67,7 +67,11 @@ async function fetchApi<T>(
       return null as T;
     }
 
-    return (isJson ? await response.json() : await response.text()) as T;
+    if (isJson) {
+      return await response.json();
+    }
+
+    return (await response.text()) as T;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
