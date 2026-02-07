@@ -37,9 +37,22 @@ async function fetchApi<T>(
   }
 
   // Default headers - only set Content-Type for non-FormData requests
-  const headers: Record<string, string> = {
-    ...fetchConfig.headers,
-  };
+  const headers: Record<string, string> = {};
+
+  // Copy existing headers if they exist
+  if (fetchConfig.headers) {
+    if (fetchConfig.headers instanceof Headers) {
+      fetchConfig.headers.forEach((value, key) => {
+        headers[key] = value;
+      });
+    } else if (Array.isArray(fetchConfig.headers)) {
+      fetchConfig.headers.forEach(([key, value]) => {
+        headers[key] = value;
+      });
+    } else {
+      Object.assign(headers, fetchConfig.headers);
+    }
+  }
 
   // Only set Content-Type for non-FormData requests
   if (!(fetchConfig.body instanceof FormData)) {
