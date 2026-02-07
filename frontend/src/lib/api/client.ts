@@ -67,11 +67,14 @@ async function fetchApi<T>(
       return null as T;
     }
 
+    // Parse response based on content type
     if (isJson) {
-      return await response.json();
+      const jsonData = await response.json();
+      return jsonData as T;
+    } else {
+      const textData = await response.text();
+      return textData as unknown as T;
     }
-
-    return (await response.text()) as T;
   } catch (error) {
     if (error instanceof ApiError) {
       throw error;
