@@ -3,7 +3,7 @@
  */
 
 import api from '../client';
-import { User, AuthResponse } from '../types';
+import { User } from '../types';
 
 export const authApi = {
   /**

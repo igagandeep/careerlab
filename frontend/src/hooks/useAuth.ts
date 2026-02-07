@@ -7,6 +7,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { authApi } from '@/lib/api/endpoints';
+import { ApiError } from '@/lib/api/client';
 import { User } from '@/lib/api/types';
 
 export const AUTH_QUERY_KEY = ['auth', 'user'];
@@ -25,7 +26,7 @@ export function useAuth() {
     queryFn: async () => {
       try {
         return await authApi.getCurrentUser();
-      } catch (error: any) {
+      } catch (error: ApiError) {
         // If 401, user is not authenticated
         if (error.status === 401) {
           return null;
@@ -46,7 +47,7 @@ export function useAuth() {
       toast.success('Logged out successfully');
       router.push('/');
     },
-    onError: (error: any) => {
+    onError: (error: ApiError) => {
       toast.error(error.message || 'Logout failed');
     },
   });

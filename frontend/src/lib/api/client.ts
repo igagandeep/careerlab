@@ -36,11 +36,15 @@ async function fetchApi<T>(
     url += `?${searchParams.toString()}`;
   }
 
-  // Default headers
+  // Default headers - only set Content-Type for non-FormData requests
   const headers: HeadersInit = {
-    'Content-Type': 'application/json',
     ...fetchConfig.headers,
   };
+
+  // Only set Content-Type for non-FormData requests
+  if (!(fetchConfig.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json';
+  }
 
   try {
     const response = await fetch(url, {
@@ -125,10 +129,6 @@ export const api = {
       ...config,
       method: 'POST',
       body: formData,
-      headers: {
-        // Don't set Content-Type for FormData, browser will set it with boundary
-        ...config?.headers,
-      },
     }),
 };
 
