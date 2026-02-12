@@ -14,7 +14,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from './ui/button';
-import { useAuth } from '@/hooks';
+import { useAuth } from '@/hooks/useAuth';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
