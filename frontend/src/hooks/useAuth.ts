@@ -3,6 +3,7 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import { authApi } from '@/api/auth';
 import { User } from '@/types';
+import { SignUpData, SignInData } from '@/lib/validations/auth';
 import { AxiosError } from 'axios';
 
 export function useAuth() {
@@ -25,6 +26,33 @@ export function useAuth() {
     retry: false,
   });
 
+  const signUpMutation = useMutation({
+    mutationFn: authApi.signUp,
+    onSuccess: user => {
+      queryClient.setQueryData(['user'], user);
+      toast.success('Account created successfully!');
+      router.push('/dashboard');
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      const message =
+        error.response?.data?.message || 'Failed to create account';
+      toast.error(message);
+    },
+  });
+
+  const signInMutation = useMutation({
+    mutationFn: authApi.signIn,
+    onSuccess: user => {
+      queryClient.setQueryData(['user'], user);
+      toast.success('Welcome back!');
+      router.push('/dashboard');
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      const message = error.response?.data?.message || 'Failed to sign in';
+      toast.error(message);
+    },
+  });
+
   const logoutMutation = useMutation({
     mutationFn: authApi.logout,
     onSuccess: () => {
@@ -42,8 +70,13 @@ export function useAuth() {
     user,
     isLoading,
     isAuthenticated: !!user,
+    signUp: (data: SignUpData) => signUpMutation.mutate(data),
+    signIn: (data: SignInData) => signInMutation.mutate(data),
     logout: () => logoutMutation.mutate(),
     loginWithGoogle: authApi.loginWithGoogle,
+    loginWithGitHub: authApi.loginWithGitHub,
+    isSigningUp: signUpMutation.isPending,
+    isSigningIn: signInMutation.isPending,
     isLoggingOut: logoutMutation.isPending,
   };
 }
