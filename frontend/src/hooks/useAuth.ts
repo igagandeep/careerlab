@@ -28,14 +28,39 @@ export function useAuth() {
 
   const signUpMutation = useMutation({
     mutationFn: authApi.signUp,
-    onSuccess: user => {
-      queryClient.setQueryData(['user'], user);
-      toast.success('Account created successfully!');
-      router.push('/dashboard');
+    onSuccess: () => {
+      toast.success(
+        'Account created! Please check your email for verification code.'
+      );
     },
     onError: (error: AxiosError<{ message: string }>) => {
       const message =
         error.response?.data?.message || 'Failed to create account';
+      toast.error(message);
+    },
+  });
+
+  const verifyEmailMutation = useMutation({
+    mutationFn: ({ email, otp }: { email: string; otp: string }) =>
+      authApi.verifyEmail(email, otp),
+    onSuccess: user => {
+      queryClient.setQueryData(['user'], user);
+      toast.success('Email verified successfully! Welcome to CareerLab!');
+      router.push('/dashboard');
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      const message = error.response?.data?.message || 'Failed to verify email';
+      toast.error(message);
+    },
+  });
+
+  const resendOTPMutation = useMutation({
+    mutationFn: authApi.resendOTP,
+    onSuccess: () => {
+      toast.success('New verification code sent to your email!');
+    },
+    onError: (error: AxiosError<{ message: string }>) => {
+      const message = error.response?.data?.message || 'Failed to resend code';
       toast.error(message);
     },
   });
@@ -71,11 +96,16 @@ export function useAuth() {
     isLoading,
     isAuthenticated: !!user,
     signUp: (data: SignUpData) => signUpMutation.mutate(data),
+    verifyEmail: (email: string, otp: string) =>
+      verifyEmailMutation.mutate({ email, otp }),
+    resendOTP: (email: string) => resendOTPMutation.mutate(email),
     signIn: (data: SignInData) => signInMutation.mutate(data),
     logout: () => logoutMutation.mutate(),
     loginWithGoogle: authApi.loginWithGoogle,
     loginWithGitHub: authApi.loginWithGitHub,
     isSigningUp: signUpMutation.isPending,
+    isVerifyingEmail: verifyEmailMutation.isPending,
+    isResendingOTP: resendOTPMutation.isPending,
     isSigningIn: signInMutation.isPending,
     isLoggingOut: logoutMutation.isPending,
   };

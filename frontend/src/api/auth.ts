@@ -4,18 +4,31 @@ import { SignUpData, SignInData } from '@/lib/validations/auth';
 
 export const authApi = {
   getCurrentUser: async (): Promise<User> => {
-    const response = await api.get('/api/auth/me');
+    throw new Error('getCurrentUser endpoint not implemented');
+  },
+
+  signUp: async (
+    data: SignUpData
+  ): Promise<{ message: string; otpSent: boolean }> => {
+    const response = await api.post('/api/auth/register', data);
     return response.data;
   },
 
-  signUp: async (data: SignUpData): Promise<User> => {
-    const response = await api.post('/api/auth/signup', data);
+  verifyEmail: async (email: string, otp: string): Promise<User> => {
+    const response = await api.post('/api/auth/verify-email', { email, otp });
+    return response.data.data.user;
+  },
+
+  resendOTP: async (
+    email: string
+  ): Promise<{ message: string; otpSent: boolean }> => {
+    const response = await api.post('/api/auth/resend-otp', { email });
     return response.data;
   },
 
   signIn: async (data: SignInData): Promise<User> => {
-    const response = await api.post('/api/auth/signin', data);
-    return response.data;
+    const response = await api.post('/api/auth/login', data);
+    return response.data.data.user;
   },
 
   logout: async (): Promise<void> => {

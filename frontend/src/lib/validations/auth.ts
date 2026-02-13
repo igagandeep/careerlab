@@ -19,5 +19,14 @@ export const signInSchema = z.object({
   password: z.string().min(1, 'Password is required'),
 });
 
+export const verifyEmailSchema = z.object({
+  email: z.string().email('Please enter a valid email address'),
+  otp: z
+    .string()
+    .length(6, 'Verification code must be exactly 6 digits')
+    .regex(/^\d+$/, 'Verification code must contain only numbers'),
+});
+
 export type SignUpData = z.infer<typeof signUpSchema>;
 export type SignInData = z.infer<typeof signInSchema>;
+export type VerifyEmailData = z.infer<typeof verifyEmailSchema>;
