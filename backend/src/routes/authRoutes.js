@@ -6,6 +6,7 @@ import {
   resendOTP,
   verifyEmail,
   forgotPassword,
+  verifyResetCode,
   resetPassword,
 } from '../controllers/authController.js';
 import {
@@ -14,6 +15,7 @@ import {
   resendOTPSchema,
   verifyEmailSchema,
   forgotPasswordSchema,
+  verifyResetCodeSchema,
   resetPasswordSchema,
 } from '../validators/authValidator.js';
 import { validateRequest } from '../middlewares/validateRequest.js';
@@ -29,6 +31,11 @@ router.post(
   '/forgot-password',
   validateRequest(forgotPasswordSchema),
   forgotPassword
+);
+router.post(
+  '/verify-reset-code',
+  validateRequest(verifyResetCodeSchema),
+  verifyResetCode
 );
 router.post(
   '/reset-password',
