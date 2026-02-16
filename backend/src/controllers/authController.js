@@ -290,6 +290,47 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+const verifyResetCode = async (req, res) => {
+  const { email, code } = req.body;
+
+  try {
+    if (!email || !code) {
+      return res.status(400).json({ error: 'Email and code are required' });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { email: email },
+    });
+
+    if (!user) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid or expired reset code. Please try again.' });
+    }
+
+    if (user.verificationToken !== code) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid or expired reset code. Please try again.' });
+    }
+
+    if (user.tokenExpiry && new Date() > user.tokenExpiry) {
+      return res
+        .status(400)
+        .json({ error: 'Invalid or expired reset code. Please try again.' });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Reset code verified successfully',
+      isValid: true,
+    });
+  } catch (error) {
+    console.error('Verify reset code error:', error);
+    res.status(500).json({ error: 'Server error during code verification' });
+  }
+};
+
 const resetPassword = async (req, res) => {
   const { email, otp, newPassword, confirmPassword } = req.body;
 
@@ -352,5 +393,6 @@ export {
   verifyEmail,
   resendOTP,
   forgotPassword,
+  verifyResetCode,
   resetPassword,
 };

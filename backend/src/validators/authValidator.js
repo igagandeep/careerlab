@@ -64,6 +64,20 @@ const forgotPasswordSchema = z.object({
     .toLowerCase(),
 });
 
+const verifyResetCodeSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email is required')
+    .email('Please provide a valid email')
+    .toLowerCase(),
+  code: z
+    .string()
+    .min(6, 'Reset code must be 6 digits')
+    .max(6, 'Reset code must be 6 digits')
+    .regex(/^\d{6}$/, 'Reset code must be exactly 6 digits'),
+});
+
 const resetPasswordSchema = z
   .object({
     email: z
@@ -94,5 +108,6 @@ export {
   verifyEmailSchema,
   resendOTPSchema,
   forgotPasswordSchema,
+  verifyResetCodeSchema,
   resetPasswordSchema,
 };
