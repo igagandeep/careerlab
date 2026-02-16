@@ -1,6 +1,10 @@
 import { api } from './client';
 import { User } from '@/types';
-import { SignUpData, SignInData } from '@/lib/validations/auth';
+import {
+  SignUpData,
+  SignInData,
+  ResetPasswordData,
+} from '@/lib/validations/auth';
 
 export const authApi = {
   getCurrentUser: async (): Promise<User> => {
@@ -29,6 +33,31 @@ export const authApi = {
   signIn: async (data: SignInData): Promise<User> => {
     const response = await api.post('/api/auth/login', data);
     return response.data.data.user;
+  },
+
+  sendResetCode: async (
+    email: string
+  ): Promise<{ message: string; codeSent: boolean }> => {
+    const response = await api.post('/api/auth/forgot-password', { email });
+    return response.data;
+  },
+
+  verifyResetCode: async (
+    email: string,
+    code: string
+  ): Promise<{ message: string; isValid: boolean }> => {
+    const response = await api.post('/api/auth/verify-reset-code', {
+      email,
+      code,
+    });
+    return response.data;
+  },
+
+  setNewPassword: async (
+    data: ResetPasswordData
+  ): Promise<{ message: string; user: { id: string; email: string } }> => {
+    const response = await api.post('/api/auth/reset-password', data);
+    return response.data;
   },
 
   logout: async (): Promise<void> => {
