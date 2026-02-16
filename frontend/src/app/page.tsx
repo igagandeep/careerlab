@@ -74,8 +74,9 @@ export default function Home() {
               <span className="text-primary">AI-Powered</span> Career Tools
             </h1>
             <h2 className="text-base md:text-xl text-gray-500 max-w-2xl mx-auto">
-              Optimize your resume, track applications, and ace interviews — all
-              in one powerful platform designed to accelerate your job search.
+              Track your applications, get resume feedback, and practice
+              interviews. Everything you need to stay organized during your job
+              search.
             </h2>
             <div className="flex flex-col md:flex-row justify-center items-center gap-3 md:gap-6 flex-wrap">
               {features.map((feature, i) => (
@@ -91,20 +92,20 @@ export default function Home() {
             <div className="flex flex-col md:flex-row justify-center gap-3 md:gap-4 pt-2 px-4 md:px-0">
               <Button
                 onClick={openSignInModal}
-                className="w-full md:w-60 h-12 md:h-14 rounded-[12px] bg-secondary text-base md:text-lg text-secondary-foreground hover:bg-secondary/90 transition-colors"
+                className="w-full md:w-60 h-12 md:h-14 rounded-[12px] bg-slate-800 text-base md:text-lg text-white hover:bg-slate-700 transition-colors"
               >
-                Start Free Trial
+                Get Started
               </Button>
               <Button
                 onClick={openSignInModal}
                 className="w-full md:w-60 h-12 md:h-14 rounded-[12px] text-base md:text-lg"
                 variant="outline"
               >
-                Analyze My Resume
+                Explore Features
               </Button>
             </div>
             <p className="text-sm md:text-base text-gray-500">
-              Trusted by 10,000+ job seekers worldwide
+              Free to use • Takes 30 seconds to sign up
             </p>
           </div>
 
@@ -114,8 +115,8 @@ export default function Home() {
               <span className="text-primary">Land the Job</span>
             </h2>
             <p className="text-gray-500 text-base md:text-xl w-full md:w-[50%] text-center px-4 md:px-0">
-              A complete toolkit designed to streamline your job search and
-              maximize your success rate.
+              Simple tools that actually help you get organized and land
+              interviews.
             </p>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 max-w-5xl mx-auto gap-8 mt-12">
@@ -153,10 +154,10 @@ export default function Home() {
               </h2>
 
               <p className="text-gray-300 text-base md:text-xl leading-relaxed max-w-3xl mx-auto">
-                Join thousands of professionals who&apos;ve transformed their
-                job search with CareerLab.
+                A simple toolkit to help you organize your job search and
+                improve your resume.
                 <br />
-                Get started for free — no credit card required.
+                Start using it today, completely free.
               </p>
 
               <div className="flex flex-col md:flex-row justify-center gap-4 pt-6">

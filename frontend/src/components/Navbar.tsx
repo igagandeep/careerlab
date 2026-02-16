@@ -1,5 +1,5 @@
 'use client';
-import { Menu, Sparkles, X } from 'lucide-react';
+import { Menu, Sparkles, X, Star } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { Button } from './ui/button';
@@ -33,10 +33,16 @@ const Navbar = () => {
             </li>
             <li className="flex items-center">
               <Button
-                onClick={openSignInModal}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                onClick={() =>
+                  window.open(
+                    'https://github.com/igagandeep/careerlab',
+                    '_blank'
+                  )
+                }
+                className=" text-white flex items-center gap-2"
               >
-                Get Started Free
+                <Star className="w-4 h-4" />
+                Star on GitHub
               </Button>
             </li>
           </ul>
@@ -69,12 +75,16 @@ const Navbar = () => {
               </button>
               <Button
                 onClick={() => {
-                  openSignInModal();
+                  window.open(
+                    'https://github.com/igagandeep/careerlab',
+                    '_blank'
+                  );
                   setIsMenuOpen(false);
                 }}
-                className="bg-primary hover:bg-primary/90 text-primary-foreground w-full"
+                className="bg-orange-500 hover:bg-orange-600 text-white w-full flex items-center justify-center gap-2"
               >
-                Get Started Free
+                <Star className="w-4 h-4" />
+                Star on GitHub
               </Button>
             </div>
           </div>
