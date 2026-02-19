@@ -48,6 +48,9 @@ Thumbs.db
 tmp/
 temp/
 
+# Local SQLite database
+backend/prisma/local.db
+
 # Local-only docs (not for GitHub)
 PUSH-BREAKPOINTS.md
 PROJECT-PLAN.md
