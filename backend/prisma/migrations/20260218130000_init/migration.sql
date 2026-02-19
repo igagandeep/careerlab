@@ -1,0 +1,2 @@
+-- Career Lab: SQLite schema init (no auth/users table).
+-- Tables for jobs, applications, resumes will be added in future migrations.

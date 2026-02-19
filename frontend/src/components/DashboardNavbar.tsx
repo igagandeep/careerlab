@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import {
   Sparkles,
   LayoutDashboard,
@@ -9,6 +10,7 @@ import {
   MessageSquare,
   Menu,
   X,
+  LogOut,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -21,6 +23,14 @@ const navLinks = [
 
 export default function DashboardNavbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+
+  const handleStartOver = () => {
+    localStorage.removeItem('career_lab_setup_complete');
+    localStorage.removeItem('career_lab_user');
+    localStorage.removeItem('demo_session');
+    router.push('/');
+  };
 
   return (
     <header className="border-b border-gray-100 bg-white">
@@ -47,6 +57,16 @@ export default function DashboardNavbar() {
               </li>
             );
           })}
+          <li>
+            <button
+              type="button"
+              onClick={handleStartOver}
+              className="text-sm flex items-center gap-2 font-medium text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              <LogOut className="w-4 h-4" />
+              Start over
+            </button>
+          </li>
         </ul>
 
         <button
@@ -78,6 +98,17 @@ export default function DashboardNavbar() {
                 </Link>
               );
             })}
+            <button
+              type="button"
+              onClick={() => {
+                handleStartOver();
+                setIsMenuOpen(false);
+              }}
+              className="text-sm font-medium flex items-center gap-2 text-gray-600 hover:text-gray-900 w-full text-left"
+            >
+              <LogOut className="w-4 h-4" />
+              Start over
+            </button>
           </div>
         </div>
       )}
