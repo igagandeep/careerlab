@@ -3,17 +3,14 @@ import { Menu, Sparkles, X, Star } from 'lucide-react';
 import Link from 'next/link';
 import React, { useState } from 'react';
 import { Button } from './ui/button';
-import { useModal } from '../providers/ModalProvider';
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { openSignInModal } = useModal();
 
   return (
     <>
       <header className="border-b border-gray-100">
         <nav className="flex justify-between items-center py-4 max-w-[1377px] mx-auto px-4">
-          {/* Logo */}
           <Link href="/" className="flex items-center gap-2">
             <div className="bg-slate-800 rounded-xl p-2">
               <Sparkles className="w-5 h-5 text-white" />
@@ -21,16 +18,7 @@ const Navbar = () => {
             <h3 className="text-xl font-bold">CareerLab</h3>
           </Link>
 
-          {/* Desktop Navigation */}
           <ul className="hidden md:flex items-center gap-6">
-            <li>
-              <button
-                onClick={openSignInModal}
-                className="text-sm flex items-center font-semibold gap-1 hover:text-gray-600 transition-colors"
-              >
-                Sign In
-              </button>
-            </li>
             <li className="flex items-center">
               <Button
                 onClick={() =>
@@ -47,7 +35,6 @@ const Navbar = () => {
             </li>
           </ul>
 
-          {/* Mobile Hamburger */}
           <button
             className="md:hidden"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -60,19 +47,9 @@ const Navbar = () => {
           </button>
         </nav>
 
-        {/* Mobile Menu */}
         {isMenuOpen && (
           <div className="md:hidden border-t border-gray-100 bg-white">
             <div className="max-w-[1377px] mx-auto px-4 py-4 space-y-4">
-              <button
-                onClick={() => {
-                  openSignInModal();
-                  setIsMenuOpen(false);
-                }}
-                className="text-sm font-semibold block w-full text-left hover:text-gray-600 transition-colors"
-              >
-                Sign In
-              </button>
               <Button
                 onClick={() => {
                   window.open(

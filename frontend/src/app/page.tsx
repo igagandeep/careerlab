@@ -1,8 +1,10 @@
 'use client';
 
+import { useEffect } from 'react';
+import { appConfig } from '@/lib/config';
+import LocalWelcome from '@/components/LocalWelcome';
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { useModal } from '@/providers/ModalProvider';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
@@ -12,6 +14,8 @@ import {
   Briefcase,
   MessageSquare,
   Globe,
+  Download,
+  Play,
 } from 'lucide-react';
 
 const features = [
@@ -52,7 +56,28 @@ const services = [
 ];
 
 export default function Home() {
-  const { openSignInModal } = useModal();
+  useEffect(() => {
+    if (appConfig.isLocal) {
+      const setupComplete = localStorage.getItem('career_lab_setup_complete');
+      if (setupComplete) {
+        window.location.href = '/dashboard';
+        return;
+      }
+    }
+  }, []);
+
+  if (appConfig.isLocal) {
+    return <LocalWelcome />;
+  }
+
+  const handleTryDemo = () => {
+    localStorage.setItem('demo_session', 'true');
+    window.location.href = '/dashboard';
+  };
+
+  const handleDownloadLocal = () => {
+    window.open('https://github.com/igagandeep/careerlab', '_blank');
+  };
 
   return (
     <>
@@ -89,23 +114,40 @@ export default function Home() {
                 </div>
               ))}
             </div>
+
+            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 max-w-2xl mx-auto">
+              <h3 className="font-semibold text-orange-800 mb-2">
+                🎯 Demo Version
+              </h3>
+              <p className="text-sm text-orange-700 mb-3">
+                Try limited features: 1 resume analysis • 1 mock interview • 3
+                job applications
+              </p>
+              <p className="text-xs text-orange-600">
+                Download the full version for unlimited access to all features
+              </p>
+            </div>
+
             <div className="flex flex-col md:flex-row justify-center gap-3 md:gap-4 pt-2 px-4 md:px-0">
               <Button
-                onClick={openSignInModal}
+                onClick={handleTryDemo}
                 className="w-full md:w-60 h-12 md:h-14 rounded-[12px] bg-slate-800 text-base md:text-lg text-white hover:bg-slate-700 transition-colors"
               >
-                Get Started
+                <Play className="w-4 h-4 mr-2" />
+                Try Demo
               </Button>
               <Button
-                onClick={openSignInModal}
+                onClick={handleDownloadLocal}
                 className="w-full md:w-60 h-12 md:h-14 rounded-[12px] text-base md:text-lg"
                 variant="outline"
               >
-                Explore Features
+                <Download className="w-4 h-4 mr-2" />
+                Download Full Version
               </Button>
             </div>
             <p className="text-sm md:text-base text-gray-500">
-              Free to use • Takes 30 seconds to sign up
+              Demo: Limited features • Full Version: Unlimited access • 100%
+              Free & Open Source
             </p>
           </div>
 
@@ -141,7 +183,6 @@ export default function Home() {
             })}
           </div>
 
-          {/* CTA Section */}
           <div className="bg-secondary rounded-2xl p-8 md:p-16 mt-20 text-center text-white">
             <div className="max-w-4xl mx-auto space-y-8">
               <div className="flex items-center justify-center gap-2 text-sm text-gray-300 mb-6">
@@ -154,25 +195,27 @@ export default function Home() {
               </h2>
 
               <p className="text-gray-300 text-base md:text-xl leading-relaxed max-w-3xl mx-auto">
-                A simple toolkit to help you organize your job search and
-                improve your resume.
+                Try our demo with limited features, or download the full version
+                for unlimited access.
                 <br />
-                Start using it today, completely free.
+                100% free and open source.
               </p>
 
               <div className="flex flex-col md:flex-row justify-center gap-4 pt-6">
                 <Button
-                  onClick={openSignInModal}
+                  onClick={handleTryDemo}
                   className="bg-orange-500 hover:bg-orange-600 text-white px-8 py-4 text-lg rounded-lg font-semibold"
                 >
-                  Get Started Free →
+                  <Play className="w-4 h-4 mr-2" />
+                  Try Demo →
                 </Button>
                 <Button
-                  onClick={openSignInModal}
+                  onClick={handleDownloadLocal}
                   variant="secondary"
                   className="bg-white text-slate-800 hover:bg-gray-100 px-8 py-4 text-lg rounded-lg font-semibold"
                 >
-                  Try Resume Analyzer
+                  <Download className="w-4 h-4 mr-2" />
+                  Download Full Version
                 </Button>
               </div>
             </div>
