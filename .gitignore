@@ -47,3 +47,8 @@ Thumbs.db
 # Temporary folders
 tmp/
 temp/
+
+# Local-only docs (not for GitHub)
+PUSH-BREAKPOINTS.md
+PROJECT-PLAN.md
+README-LOCAL.md

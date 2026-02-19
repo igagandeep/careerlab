@@ -1,7 +1,1 @@
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-  image?: string;
-  createdAt: string;
-}
+// Shared types for Career Lab (jobs, applications, etc. - add as needed)

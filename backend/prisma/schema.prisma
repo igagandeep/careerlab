@@ -3,20 +3,6 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-model User {
-  id                String    @id @default(uuid())
-  name              String
-  email             String    @unique
-  password          String
-  isVerified        Boolean   @default(false)
-  verificationToken String?
-  tokenExpiry       DateTime?
-
-  createdAt DateTime @default(now())
-
-  @@map("users")
+  provider = "sqlite"
+  url      = "file:./local.db"
 }
