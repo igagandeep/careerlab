@@ -18,12 +18,8 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: '/api/auth/:path*',
-        destination: '/api/auth/:path*' // Keep auth endpoints local
-      },
-      {
         source: '/api/:path*',
-        destination: process.env.NODE_ENV === 'production' 
+        destination: process.env.NODE_ENV === 'production'
           ? `${process.env.NEXT_PUBLIC_API_URL}/api/:path*`
           : 'http://localhost:5000/api/:path*'
       }
@@ -36,7 +32,7 @@ const nextConfig: NextConfig = {
         headers: [
           { key: 'Access-Control-Allow-Origin', value: '*' },
           { key: 'Access-Control-Allow-Methods', value: 'GET,OPTIONS,PATCH,DELETE,POST,PUT' },
-          { key: 'Access-Control-Allow-Headers', value: 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version, Authorization' },
+          { key: 'Access-Control-Allow-Headers', value: 'X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version' },
         ],
       },
     ];

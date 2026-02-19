@@ -5,8 +5,6 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     env: {
-      JWT_SECRET: 'test-secret-key',
-      JWT_EXPIRES_IN: '7d',
       NODE_ENV: 'test',
     },
   },

@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import {
   Sparkles,
   LayoutDashboard,
@@ -10,11 +9,8 @@ import {
   MessageSquare,
   Menu,
   X,
-  LogOut,
 } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from './ui/button';
-import { useAuth } from '@/hooks/useAuth';
 
 const navLinks = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -24,17 +20,11 @@ const navLinks = [
 ];
 
 export default function DashboardNavbar() {
-  const { user, logout, isLoggingOut } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  const handleSignOut = () => {
-    logout();
-  };
 
   return (
     <header className="border-b border-gray-100 bg-white">
       <nav className="flex justify-between items-center py-4 max-w-[1377px] mx-auto px-4">
-        {/* Logo */}
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="bg-slate-800 rounded-xl p-2">
             <Sparkles className="w-5 h-5 text-white" />
@@ -42,7 +32,6 @@ export default function DashboardNavbar() {
           <h3 className="text-xl font-bold">CareerLab</h3>
         </Link>
 
-        {/* Desktop Navigation */}
         <ul className="hidden md:flex items-center gap-6">
           {navLinks.map(link => {
             const Icon = link.icon;
@@ -60,30 +49,6 @@ export default function DashboardNavbar() {
           })}
         </ul>
 
-        {/* User Profile & Logout */}
-        <div className="hidden md:flex items-center gap-4">
-          <Button
-            onClick={handleSignOut}
-            variant="ghost"
-            size="sm"
-            className="text-gray-600 hover:text-gray-900"
-            disabled={isLoggingOut}
-          >
-            <LogOut className="w-4 h-4 mr-2" />
-            {isLoggingOut ? 'Logging out...' : 'Logout'}
-          </Button>
-          {user?.image && (
-            <Image
-              src={user.image}
-              alt="Profile"
-              width={36}
-              height={36}
-              className="rounded-full"
-            />
-          )}
-        </div>
-
-        {/* Mobile Hamburger */}
         <button
           className="md:hidden"
           onClick={() => setIsMenuOpen(!isMenuOpen)}
@@ -96,7 +61,6 @@ export default function DashboardNavbar() {
         </button>
       </nav>
 
-      {/* Mobile Menu */}
       {isMenuOpen && (
         <div className="md:hidden border-t border-gray-100 bg-white">
           <div className="max-w-[1377px] mx-auto px-4 py-4 space-y-4">
@@ -114,14 +78,6 @@ export default function DashboardNavbar() {
                 </Link>
               );
             })}
-            <Button
-              onClick={handleSignOut}
-              variant="ghost"
-              className="w-full justify-start text-gray-600"
-            >
-              <LogOut className="w-4 h-4 mr-2" />
-              Logout
-            </Button>
           </div>
         </div>
       )}
